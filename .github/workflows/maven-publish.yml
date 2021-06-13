@@ -1,6 +1,9 @@
 name: Maven Publish
 
 on:
+  push:
+    branches:
+      - new-deferred-and-dataloader
   release:
     types:
       - released

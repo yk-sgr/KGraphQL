@@ -1,55 +1,59 @@
 package com.apurebase.kgraphql.schema.execution
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineStart.LAZY
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlin.coroutines.CoroutineContext
 
-class DeferredJsonArray internal constructor(
+
+@Suppress("SuspendFunctionOnCoroutineScope")
+public class DeferredJsonArray internal constructor(
     ctx: CoroutineContext
-): CoroutineScope {
+): CoroutineScope, Mutex by Mutex() {
 
     private val job = SupervisorJob()
-    override val coroutineContext = (ctx + job)
+    override val coroutineContext: CoroutineContext = ctx + job
 
     private val deferredArray = mutableListOf<Deferred<JsonElement>>()
     private var completedArray: List<JsonElement>? = null
 
-    fun addValue(element: JsonElement) {
+    public suspend fun addValue(element: JsonElement) {
         addDeferredValue(CompletableDeferred(element))
     }
 
-    fun addDeferredValue(element: Deferred<JsonElement>) {
+    public suspend fun addDeferredValue(element: Deferred<JsonElement>): Unit = withLock {
         deferredArray.add(element)
     }
 
-    suspend fun addDeferredObj(block: suspend DeferredJsonMap.() -> Unit) {
-        val map = DeferredJsonMap(coroutineContext)
+    public suspend fun addDeferredObj(block: suspend DeferredJsonMap.() -> Unit) {
+        val map = DeferredJsonMap(job)
         block(map)
-        addDeferredValue(map.asDeferred())
+        addDeferredValue(async(job, LAZY) { map.awaitAndBuild() })
     }
 
-    // TODO: Add support for this within the [DataLoaderPreparedRequestExecutor]
-    suspend fun addDeferredArray(block: suspend DeferredJsonArray.() -> Unit) {
-        val array = DeferredJsonArray(coroutineContext)
+    public suspend fun addDeferredArray(block: suspend DeferredJsonArray.() -> Unit) {
+        val array = DeferredJsonArray(job)
         block(array)
         addDeferredValue(array.asDeferred())
     }
 
-    fun asDeferred() : Deferred<JsonElement> {
-        return async(coroutineContext, start = CoroutineStart.LAZY) {
+    internal fun asDeferred() : Deferred<JsonElement> {
+        return async(job, LAZY) {
             awaitAll()
             build()
         }
     }
 
-    suspend fun awaitAll() {
+    public suspend fun awaitAll() {
         check(completedArray == null) { "The deferred tree has already been awaited!" }
         completedArray = deferredArray.awaitAll()
         job.complete()
     }
 
-    fun build(): JsonArray {
+    public fun build(): JsonArray {
         checkNotNull(completedArray) { "The deferred tree has not been awaited!" }
         return JsonArray(completedArray!!)
     }
