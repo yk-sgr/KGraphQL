@@ -1,6 +1,7 @@
 package com.apurebase.kgraphql.schema.dsl
 
 import com.apurebase.kgraphql.Context
+import com.apurebase.kgraphql.ExecutionScope
 import com.apurebase.kgraphql.schema.model.FunctionWrapper
 import com.apurebase.kgraphql.schema.model.InputValueDef
 import com.apurebase.kgraphql.schema.model.PropertyDef
@@ -24,39 +25,39 @@ class DataLoaderPropertyDSL<T, K, R>(
         dataLoader = block
     }
 
-    fun prepare(block: suspend (T) -> K) {
+    fun prepare(block: suspend ExecutionScope.(T) -> K) {
         prepareWrapper = FunctionWrapper.on(block, true)
     }
 
-    fun <E> prepare(block: suspend (T, E) -> K) {
+    fun <E> prepare(block: suspend ExecutionScope.(T, E) -> K) {
         prepareWrapper = FunctionWrapper.on(block, true)
     }
 
-    fun <E, W> prepare(block: suspend (T, E, W) -> K) {
+    fun <E, W> prepare(block: suspend ExecutionScope.(T, E, W) -> K) {
         prepareWrapper = FunctionWrapper.on(block, true)
     }
 
-    fun <E, W, Q> prepare(block: suspend (T, E, W, Q) -> K) {
+    fun <E, W, Q> prepare(block: suspend ExecutionScope.(T, E, W, Q) -> K) {
         prepareWrapper = FunctionWrapper.on(block, true)
     }
 
-    fun <E, W, Q, A> prepare(block: suspend (T, E, W, Q, A) -> K) {
+    fun <E, W, Q, A> prepare(block: suspend ExecutionScope.(T, E, W, Q, A) -> K) {
         prepareWrapper = FunctionWrapper.on(block, true)
     }
 
-    fun <E, W, Q, A, S> prepare(block: suspend (T, E, W, Q, A, S) -> K) {
+    fun <E, W, Q, A, S> prepare(block: suspend ExecutionScope.(T, E, W, Q, A, S) -> K) {
         prepareWrapper = FunctionWrapper.on(block, true)
     }
 
-    fun <E, W, Q, A, S, B> prepare(block: suspend (T, E, W, Q, A, S, B) -> K) {
+    fun <E, W, Q, A, S, B> prepare(block: suspend ExecutionScope.(T, E, W, Q, A, S, B) -> K) {
         prepareWrapper = FunctionWrapper.on(block, true)
     }
 
-    fun <E, W, Q, A, S, B, U> prepare(block: suspend (T, E, W, Q, A, S, B, U) -> K) {
+    fun <E, W, Q, A, S, B, U> prepare(block: suspend ExecutionScope.(T, E, W, Q, A, S, B, U) -> K) {
         prepareWrapper = FunctionWrapper.on(block, true)
     }
 
-    fun <E, W, Q, A, S, B, U, C> prepare(block: suspend (T, E, W, Q, A, S, B, U, C) -> K) {
+    fun <E, W, Q, A, S, B, U, C> prepare(block: suspend ExecutionScope.(T, E, W, Q, A, S, B, U, C) -> K) {
         prepareWrapper = FunctionWrapper.on(block, true)
     }
 

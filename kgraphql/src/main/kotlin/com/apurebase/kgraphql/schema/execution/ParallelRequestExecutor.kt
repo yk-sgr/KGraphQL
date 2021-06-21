@@ -334,12 +334,12 @@ class ParallelRequestExecutor(val schema: DefaultSchema) : RequestExecutor {
         //exceptions are not caught on purpose to pass up business logic errors
         return try {
             when {
-                hasReceiver -> invoke(receiver, *transformedArgs.toTypedArray())
+                hasReceiver -> invoke(ctx.requestContext, executionNode, receiver, *transformedArgs.toTypedArray())
                 isSubscription -> {
                     val subscriptionArgs = children.map { (it as Execution.Node).aliasOrKey }
-                    invoke(transformedArgs, subscriptionArgs, objectWriter)
+                    invoke(ctx.requestContext, executionNode, transformedArgs, subscriptionArgs, objectWriter)
                 }
-                else -> invoke(*transformedArgs.toTypedArray())
+                else -> invoke(ctx.requestContext, executionNode, *transformedArgs.toTypedArray())
             }
         } catch (e: Throwable) {
             if (schema.configuration.wrapErrors && e !is GraphQLError ) {

@@ -22,8 +22,8 @@ class FieldAliasSpecificationTest {
         }
 
         type<Actor>{
-            transformation(Actor::age) {
-                age: Int , inMonths : Boolean? -> if(inMonths == true) age * 12 else age
+            transformation(Actor::age) { age: Int , inMonths : Boolean? ->
+                if(inMonths == true) age * 12 else age
             }
         }
     }

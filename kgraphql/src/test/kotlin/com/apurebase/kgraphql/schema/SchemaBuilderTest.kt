@@ -83,10 +83,9 @@ class SchemaBuilderTest {
                 resolver { -> Scenario(Id("GKalus", 234234),"Gamil Kalus", "TOO LONG") }
             }
             type<Scenario> {
-
-                transformation(Scenario::content, { content: String, capitalized : Boolean? ->
-                    if(capitalized == true) content.capitalize() else content
-                })
+                transformation(Scenario::content) { content: String, capitalized: Boolean? ->
+                    if (capitalized == true) content.capitalize() else content
+                }
             }
         }
         val scenarioType = testedSchema.model.queryTypes[Scenario::class]
@@ -644,5 +643,19 @@ class SchemaBuilderTest {
         }
         val result = deserialize(schema.executeBlocking("{data}"))
         assertThat(result.extract("data/data"), equalTo(listOf("generic")))
+    }
+
+    @Test
+    fun `use of ExecutionScope within resolvers`() {
+        val result = defaultSchema {
+            query("hello") {
+                resolver { ->
+                    "Hello there ${context.get<String>()}"
+                }
+            }
+        }.executeBlocking("{hello}", context = context { +"Morty" }).deserialize()
+
+        result.extract<String>("data/hello") shouldBeEqualTo "Hello there Morty"
+
     }
 }

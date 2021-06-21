@@ -1,6 +1,7 @@
 package com.apurebase.kgraphql.schema.dsl
 
 import com.apurebase.kgraphql.Context
+import com.apurebase.kgraphql.ExecutionScope
 import com.apurebase.kgraphql.schema.model.FunctionWrapper
 import com.apurebase.kgraphql.schema.model.InputValueDef
 import com.apurebase.kgraphql.schema.model.PropertyDef
@@ -28,23 +29,23 @@ class UnionPropertyDSL<T : Any>(val name : String, block: UnionPropertyDSL<T>.()
         return ResolverDSL(this)
     }
 
-    fun resolver(function: suspend (T) -> Any?) = resolver(FunctionWrapper.on(function, true))
+    fun resolver(function: suspend ExecutionScope.(T) -> Any?) = resolver(FunctionWrapper.on(function, true))
 
-    fun <E> resolver(function: suspend (T, E) -> Any?) = resolver(FunctionWrapper.on(function, true))
+    fun <E> resolver(function: suspend ExecutionScope.(T, E) -> Any?) = resolver(FunctionWrapper.on(function, true))
 
-    fun <E, W> resolver(function: suspend (T, E, W) -> Any?) = resolver(FunctionWrapper.on(function, true))
+    fun <E, W> resolver(function: suspend ExecutionScope.(T, E, W) -> Any?) = resolver(FunctionWrapper.on(function, true))
 
-    fun <E, W, Q> resolver(function: suspend (T, E, W, Q) -> Any?) = resolver(FunctionWrapper.on(function, true))
+    fun <E, W, Q> resolver(function: suspend ExecutionScope.(T, E, W, Q) -> Any?) = resolver(FunctionWrapper.on(function, true))
 
-    fun <E, W, Q, A> resolver(function: suspend (T, E, W, Q, A) -> Any?) = resolver(FunctionWrapper.on(function, true))
+    fun <E, W, Q, A> resolver(function: suspend ExecutionScope.(T, E, W, Q, A) -> Any?) = resolver(FunctionWrapper.on(function, true))
 
-    fun <E, W, Q, A, S> resolver(function: suspend (T, E, W, Q, A, S) -> Any?) = resolver(FunctionWrapper.on(function, true))
+    fun <E, W, Q, A, S> resolver(function: suspend ExecutionScope.(T, E, W, Q, A, S) -> Any?) = resolver(FunctionWrapper.on(function, true))
 
-    fun <E, W, Q, A, S, B> resolver(function: suspend (T, E, W, Q, A, S, B) -> Any?) = resolver(FunctionWrapper.on(function, true))
+    fun <E, W, Q, A, S, B> resolver(function: suspend ExecutionScope.(T, E, W, Q, A, S, B) -> Any?) = resolver(FunctionWrapper.on(function, true))
 
-    fun <E, W, Q, A, S, B, U> resolver(function: suspend (T, E, W, Q, A, S, B, U) -> Any?) = resolver(FunctionWrapper.on(function, true))
+    fun <E, W, Q, A, S, B, U> resolver(function: suspend ExecutionScope.(T, E, W, Q, A, S, B, U) -> Any?) = resolver(FunctionWrapper.on(function, true))
 
-    fun <E, W, Q, A, S, B, U, C> resolver(function: suspend (T, E, W, Q, A, S, B, U, C) -> Any?) = resolver(FunctionWrapper.on(function, true))
+    fun <E, W, Q, A, S, B, U, C> resolver(function: suspend ExecutionScope.(T, E, W, Q, A, S, B, U, C) -> Any?) = resolver(FunctionWrapper.on(function, true))
 
     fun accessRule(rule: (T, Context) -> Exception?){
 

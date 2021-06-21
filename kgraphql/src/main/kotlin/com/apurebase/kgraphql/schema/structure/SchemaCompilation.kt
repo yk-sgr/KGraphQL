@@ -2,7 +2,7 @@
 
 package com.apurebase.kgraphql.schema.structure
 
-import com.apurebase.kgraphql.Context
+import com.apurebase.kgraphql.*
 import com.apurebase.kgraphql.configuration.SchemaConfiguration
 import com.apurebase.kgraphql.defaultKQLTypeName
 import com.apurebase.kgraphql.getIterableElementType
@@ -283,7 +283,7 @@ class SchemaCompilation(
             .map { property -> handleUnionProperty(property) }
 
 
-        val typenameResolver: suspend (Any) -> String? = { value: Any ->
+        val typenameResolver: suspend ExecutionScope.(Any) -> String? = { value: Any ->
             schemaProxy.typeByKClass(value.javaClass.kotlin)?.name ?: typeProxy.name
         }
 

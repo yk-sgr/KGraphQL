@@ -401,8 +401,8 @@ class DataLoaderPreparedRequestExecutor(val schema: DefaultSchema) : RequestExec
         )
 
         return try {
-            if (hasReceiver) invoke(receiver, *transformedArgs.toTypedArray())
-            else invoke(*transformedArgs.toTypedArray())
+            if (hasReceiver) invoke(ctx.requestContext, executionNode, receiver, *transformedArgs.toTypedArray())
+            else invoke(ctx.requestContext, executionNode, *transformedArgs.toTypedArray())
         } catch (e: Throwable) {
             if (schema.configuration.wrapErrors && e !is GraphQLError) {
                 throw GraphQLError(e.message ?: "", nodes = listOf(executionNode.selectionNode), originalError = e)

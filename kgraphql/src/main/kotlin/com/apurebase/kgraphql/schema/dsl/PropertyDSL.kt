@@ -1,6 +1,7 @@
 package com.apurebase.kgraphql.schema.dsl
 
 import com.apurebase.kgraphql.Context
+import com.apurebase.kgraphql.ExecutionScope
 import com.apurebase.kgraphql.schema.model.FunctionWrapper
 import com.apurebase.kgraphql.schema.model.InputValueDef
 import com.apurebase.kgraphql.schema.model.PropertyDef
@@ -23,22 +24,22 @@ class PropertyDSL<T : Any, R>(val name : String, block : PropertyDSL<T, R>.() ->
         return ResolverDSL(this)
     }
 
-    fun resolver(function: suspend (T) -> R)
+    fun resolver(function: suspend ExecutionScope.(T) -> R)
             = resolver(FunctionWrapper.on(function, true))
 
-    fun <E> resolver(function: suspend (T, E) -> R)
+    fun <E> resolver(function: suspend ExecutionScope.(T, E) -> R)
             = resolver(FunctionWrapper.on(function, true))
 
-    fun <E, W> resolver(function: suspend (T, E, W) -> R)
+    fun <E, W> resolver(function: suspend ExecutionScope.(T, E, W) -> R)
             = resolver(FunctionWrapper.on(function, true))
 
-    fun <E, W, Q> resolver(function: suspend (T, E, W, Q) -> R)
+    fun <E, W, Q> resolver(function: suspend ExecutionScope.(T, E, W, Q) -> R)
             = resolver(FunctionWrapper.on(function, true))
 
-    fun <E, W, Q, A> resolver(function: suspend (T, E, W, Q, A) -> R)
+    fun <E, W, Q, A> resolver(function: suspend ExecutionScope.(T, E, W, Q, A) -> R)
             = resolver(FunctionWrapper.on(function, true))
 
-    fun <E, W, Q, A, S> resolver(function: suspend (T, E, W, Q, A, S) -> R)
+    fun <E, W, Q, A, S> resolver(function: suspend ExecutionScope.(T, E, W, Q, A, S) -> R)
             = resolver(FunctionWrapper.on(function, true))
 
     fun accessRule(rule: (T, Context) -> Exception?){
