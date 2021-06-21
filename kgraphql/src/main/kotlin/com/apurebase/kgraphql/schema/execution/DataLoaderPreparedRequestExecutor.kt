@@ -1,5 +1,7 @@
 package com.apurebase.kgraphql.schema.execution
 
+import com.apurebase.deferredJson.DeferredJsonMap
+import com.apurebase.deferredJson.deferredJsonBuilder
 import com.apurebase.kgraphql.Context
 import com.apurebase.kgraphql.ExecutionException
 import com.apurebase.kgraphql.GraphQLError
@@ -16,7 +18,7 @@ import com.apurebase.kgraphql.schema.structure.InputValue
 import com.apurebase.kgraphql.schema.structure.Type
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
-import com.apurebase.kgraphql.test.DataLoader
+import nidomiro.kdataloader.DataLoader
 import kotlin.reflect.KProperty1
 
 
@@ -30,19 +32,16 @@ class DataLoaderPreparedRequestExecutor(val schema: DefaultSchema) : RequestExec
         val loaders: Map<Field.DataLoader<*, *, *>, DataLoader<Any?, *>>,
     )
 
-    private suspend fun ExecutionPlan.constructLoaders(job: Job): Map<Field.DataLoader<*, *, *>, DataLoader<Any?, *>> {
+    private suspend fun ExecutionPlan.constructLoaders(): Map<Field.DataLoader<*, *, *>, DataLoader<Any?, *>> {
         val loaders = mutableMapOf<Field.DataLoader<*, *, *>, DataLoader<Any?, *>>()
 
-        suspend fun Collection<Execution>.look() {
-            forEach { ex ->
-                ex.selectionNode
-                when (ex) {
-                    is Execution.Fragment -> ex.elements.look()
-                    is Execution.Node -> {
-                        ex.children.look()
-                        if (ex.field is Field.DataLoader<*, *, *>) {
-                            loaders[ex.field] = ex.field.loader.constructNew(null) as DataLoader<Any?, *>
-                        }
+        suspend fun Collection<Execution>.look(): Unit = forEach { ex ->
+            when (ex) {
+                is Execution.Fragment -> ex.elements.look()
+                is Execution.Node -> {
+                    ex.children.look()
+                    if (ex.field is Field.DataLoader<*, *, *>) {
+                        loaders[ex.field] = ex.field.loader.constructNew() as DataLoader<Any?, *>
                     }
                 }
             }
@@ -348,7 +347,7 @@ class DataLoaderPreparedRequestExecutor(val schema: DefaultSchema) : RequestExec
             val ctx = ExecutionContext(
                 Variables(schema, variables, plan.firstOrNull { it.variables != null }?.variables),
                 context,
-                plan.constructLoaders(job),
+                plan.constructLoaders(),
             )
 
             "data" toDeferredObj {
