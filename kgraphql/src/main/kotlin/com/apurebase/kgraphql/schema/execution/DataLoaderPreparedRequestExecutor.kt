@@ -2,9 +2,7 @@ package com.apurebase.kgraphql.schema.execution
 
 import com.apurebase.deferredJson.DeferredJsonMap
 import com.apurebase.deferredJson.deferredJsonBuilder
-import com.apurebase.kgraphql.Context
-import com.apurebase.kgraphql.ExecutionException
-import com.apurebase.kgraphql.GraphQLError
+import com.apurebase.kgraphql.*
 import com.apurebase.kgraphql.request.Variables
 import com.apurebase.kgraphql.request.VariablesJson
 import com.apurebase.kgraphql.schema.DefaultSchema
@@ -205,7 +203,8 @@ class DataLoaderPreparedRequestExecutor(val schema: DefaultSchema) : RequestExec
     private suspend fun <T> DeferredJsonMap.applyProperty(
         ctx: ExecutionContext,
         value: T,
-        child: Execution, type: Type,
+        child: Execution,
+        type: Type,
         parentCount: Long
     ) {
         when (child) {
@@ -350,16 +349,16 @@ class DataLoaderPreparedRequestExecutor(val schema: DefaultSchema) : RequestExec
                 plan.constructLoaders(),
             )
 
-            "data" toDeferredObj {
-                plan.forEach { node ->
-                    if (shouldInclude(ctx, node)) writeOperation(ctx, node, node.field as Field.Function<*, *>)
-                }
+            plan.forEach { node ->
+                if (shouldInclude(ctx, node)) writeOperation(ctx, node, node.field as Field.Function<*, *>)
             }
             ctx.loaders.values.map { it.dispatch() }
         }
 
-
-        result.await().toString()
+        GraphQLExecutionResult(
+            data = result.await(),
+            errors = null,
+        )
     }
 
     private fun createNullNode(node: Execution.Node, returnType: Type): JsonNull = if (returnType !is Type.NonNull) {

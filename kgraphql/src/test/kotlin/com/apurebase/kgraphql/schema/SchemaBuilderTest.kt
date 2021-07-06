@@ -209,8 +209,8 @@ class SchemaBuilderTest {
         assertThat(property, notNullValue())
         assertThat(property.returnType.unwrapped().name, equalTo("Actor"))
 
-        deserialize(tested.executeBlocking("{mainActor{name}}"))
-        deserialize(tested.executeBlocking("{actorById(id: 1){name}}"))
+        tested.executeBlocking("{mainActor{name}}")
+        tested.executeBlocking("{actorById(id: 1){name}}")
     }
 
     @Test
@@ -229,7 +229,7 @@ class SchemaBuilderTest {
             }
         }
 
-        schema.executeBlocking("{actor{favDishes(size: 2)}}").also(::println).deserialize()
+        schema.executeBlocking("{actor{favDishes(size: 2)}}").also(::println)
     }
 
     @Test
@@ -244,7 +244,7 @@ class SchemaBuilderTest {
             }
         }
 
-        val result = deserialize(schema.executeBlocking("query(\$type : TYPE = FULL_LENGTH){actor(type: \$type){name}}"))
+        val result = schema.executeBlocking("query(\$type : TYPE = FULL_LENGTH){actor(type: \$type){name}}")
         assertThat(result.extract<String>("data/actor/name"), equalTo("Boguś Linda FULL_LENGTH"))
     }
 
@@ -329,10 +329,10 @@ class SchemaBuilderTest {
         assertThat(intArg?.defaultValue, equalTo(expectedDefaultValue.toString()))
         assertThat(intArg?.description, equalTo(expectedDescription))
 
-        val response = deserialize(schema.executeBlocking("{data}"))
+        val response = schema.executeBlocking("{data}")
         assertThat(response.extract<Int>("data/data"), equalTo(33))
 
-        val introspection = deserialize(schema.executeBlocking("{__schema{queryType{fields{name, args{name, description, defaultValue}}}}}"))
+        val introspection = schema.executeBlocking("{__schema{queryType{fields{name, args{name, description, defaultValue}}}}}")
         assertThat(introspection.extract<String>("data/__schema/queryType/fields[0]/args[0]/description"), equalTo(expectedDescription))
     }
 
@@ -374,7 +374,7 @@ class SchemaBuilderTest {
         }
 
         val georgeName = "George"
-        val response = deserialize(schema.executeBlocking("{name}", context = context { + UserData(georgeName, "STUFF") }))
+        val response = schema.executeBlocking("{name}", context = context { + UserData(georgeName, "STUFF") })
         assertThat(response.extract<String>("data/name"), equalTo(georgeName))
     }
 
@@ -401,7 +401,7 @@ class SchemaBuilderTest {
             + UserData(georgeName, "STUFF")
             inject("ADA")
         }
-        val response = deserialize (schema.executeBlocking("{actor{ nickname, name(addStuff: true) }}", context = context))
+        val response = schema.executeBlocking("{actor{ nickname, name(addStuff: true) }}", context = context)
         assertThat(response.extract<String>("data/actor/name"), equalTo("${georgeName}STUFF"))
         assertThat(response.extract<String>("data/actor/nickname"), equalTo("Hodor and $georgeName"))
     }
@@ -429,14 +429,14 @@ class SchemaBuilderTest {
     class SixValues(val val1: Int = 1, val val2: String = "2", val val3: Int = 3, val val4: String = "4", val val5: Int = 5, val val6: String = "6")
 
     fun checkSixValuesSchema(schema: Schema) {
-        val response = deserialize (schema.executeBlocking("{" +
+        val response = schema.executeBlocking("{" +
             "queryWith1Param(val1: 2) { val1 }" +
             "queryWith2Params(val1: 2, val2: \"3\") { val1, val2 }" +
             "queryWith3Params(val1: 2, val2: \"3\", val3: 4) { val1, val2, val3 }" +
             "queryWith4Params(val1: 2, val2: \"3\", val3: 4, val4: \"5\") { val1, val2, val3, val4 }" +
             "queryWith5Params(val1: 2, val2: \"3\", val3: 4, val4: \"5\", val5: 6) { val1, val2, val3, val4, val5 }" +
             "queryWith6Params(val1: 2, val2: \"3\", val3: 4, val4: \"5\", val5: 6, val6: \"7\") { val1, val2, val3, val4, val5, val6 }" +
-            "}"))
+            "}")
         assertThat(response.extract<Int>("data/queryWith1Param/val1"), equalTo(2))
 
         assertThat(response.extract<Int>("data/queryWith2Params/val1"), equalTo(2))
@@ -584,7 +584,7 @@ class SchemaBuilderTest {
         assertThat(schema.typeByKClass(InputOne::class), notNullValue())
         assertThat(schema.inputTypeByKClass(InputOne::class), notNullValue())
 
-        val introspection = deserialize(schema.executeBlocking("{__schema{types{name}}}"))
+        val introspection = schema.executeBlocking("{__schema{types{name}}}")
         val types = introspection.extract<List<Map<String,String>>>("data/__schema/types")
         val names = types.map {it["name"]}
         assertThat(names, hasItem("TypeAsInput"))
@@ -641,7 +641,7 @@ class SchemaBuilderTest {
         val schema = defaultSchema {
             createGenericQuery(listOf("generic"))
         }
-        val result = deserialize(schema.executeBlocking("{data}"))
+        val result = schema.executeBlocking("{data}")
         assertThat(result.extract("data/data"), equalTo(listOf("generic")))
     }
 
@@ -653,7 +653,7 @@ class SchemaBuilderTest {
                     "Hello there ${context.get<String>()}"
                 }
             }
-        }.executeBlocking("{hello}", context = context { +"Morty" }).deserialize()
+        }.executeBlocking("{hello}", context = context { +"Morty" })
 
         result.extract<String>("data/hello") shouldBeEqualTo "Hello there Morty"
 

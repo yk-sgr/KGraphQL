@@ -36,9 +36,9 @@ class AccessRulesTest {
 
     @Test
     fun `allow when matching`(){
-        val kobe = deserialize (
-                schema.executeBlocking("{black_mamba{name}}", context = context { +"LAKERS" })
-        ).extract<String>("data/black_mamba/name")
+        val kobe = schema
+            .executeBlocking("{black_mamba{name}}", context = context { +"LAKERS" })
+            .extract<String>("data/black_mamba/name")
 
         assertThat(kobe, equalTo("KOBE"))
     }
@@ -46,16 +46,16 @@ class AccessRulesTest {
     @Test
     fun `reject when not matching`(){
         expect<IllegalAccessException>("") {
-            deserialize (
-                    schema.executeBlocking("{ black_mamba {id} }", context = context { +"LAKERS" })
-            ).extract<String>("data/black_mamba/id")
+            schema
+                .executeBlocking("{ black_mamba {id} }", context = context { +"LAKERS" })
+                .extract<String>("data/black_mamba/id")
         }
     }
 
     @Test
     fun `allow property resolver access rule`() {
         assertThat(
-            deserialize(schema.executeBlocking("{white_mamba {item}}")).extract<String>("data/white_mamba/item"),
+            schema.executeBlocking("{white_mamba {item}}").extract<String>("data/white_mamba/item"),
             equalTo("item")
         )
     }

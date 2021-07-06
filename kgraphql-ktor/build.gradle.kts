@@ -1,6 +1,6 @@
 plugins {
     base
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.5.20"
     kotlin("plugin.serialization") version "1.5.0"
     id("org.jetbrains.dokka") version "1.4.32"
     signing
@@ -11,7 +11,6 @@ val kDataLoader_version: String by project
 val kotlin_version: String by project
 val serialization_version: String by project
 val coroutine_version: String by project
-val jackson_version: String by project
 val ktor_version: String by project
 
 val netty_version: String by project

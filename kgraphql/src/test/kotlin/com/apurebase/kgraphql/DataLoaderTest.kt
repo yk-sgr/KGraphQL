@@ -2,7 +2,6 @@ package com.apurebase.kgraphql
 
 import com.apurebase.kgraphql.schema.DefaultSchema
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
-import com.apurebase.kgraphql.schema.execution.Executor
 import kotlinx.coroutines.*
 import nidomiro.kdataloader.ExecutionResult
 import org.amshove.kluent.shouldBeEqualTo
@@ -67,7 +66,6 @@ class DataLoaderTest {
         val schema = defaultSchema {
             configure {
                 useDefaultPrettyPrinter = true
-                executor = Executor.DataLoaderPrepared
             }
 
             query("people") {
@@ -248,7 +246,7 @@ class DataLoaderTest {
 
             val test: (Int) -> DynamicTest = {
                 DynamicTest.dynamicTest("test-$it") {
-                    val result = schema.executeBlocking(query).also(::println).deserialize()
+                    val result = schema.executeBlocking(query).also(::println)
 
                     result.extract<String>("data/abc[0]/value") shouldBeEqualTo "Testing 1"
                     result.extract<String>("data/abc[0]/person/fullName") shouldBeEqualTo "Jógvan Olsen"
@@ -317,7 +315,7 @@ class DataLoaderTest {
                 }                
             """.trimIndent()
 
-            schema.executeBlocking(query).also(::println).deserialize()
+            schema.executeBlocking(query).also(::println)
         }
     }
 
@@ -336,7 +334,7 @@ class DataLoaderTest {
                 }
             """.trimIndent()
 
-            val result = schema.executeBlocking(query).also(::println).deserialize()
+            val result = schema.executeBlocking(query).also(::println)
 
             MatcherAssert.assertThat(result.extract<String>("data/abc[0]/simpleChild/value"), CoreMatchers.equalTo("NewChild!"))
         }
@@ -362,7 +360,7 @@ class DataLoaderTest {
                 }
             """.trimIndent()
 
-            schema.executeBlocking(query).also(::println).deserialize()
+            schema.executeBlocking(query).also(::println)
         }
     }
 
@@ -383,10 +381,10 @@ class DataLoaderTest {
                     }
                 }
             """.trimIndent()
-            val result = schema.executeBlocking(query).also(::println).deserialize()
+            val result = schema.executeBlocking(query).also(::println)
 
             result.extract<String>("data/abc[0]/person/fullName") shouldBeEqualTo "${jogvan.firstName} ${jogvan.lastName}"
-            extractOrNull<String>(result, "data/abc[1]/person") shouldBeEqualTo null
+            result.extractOrNull<String>("data/abc[1]/person") shouldBeEqualTo null
             result.extract<String>("data/abc[2]/person/fullName") shouldBeEqualTo "${juul.firstName} ${juul.lastName}"
         }
     }
@@ -409,7 +407,7 @@ class DataLoaderTest {
                     fullName
                 }
             """.trimIndent()
-            val result = schema.executeBlocking(query).also(::println).deserialize()
+            val result = schema.executeBlocking(query).also(::println)
 
 
             result.extract<String>("data/people[0]/respondsTo/fullName") shouldBeEqualTo "${juul.firstName} ${juul.lastName}"
@@ -434,7 +432,7 @@ class DataLoaderTest {
                 }
             """.trimIndent()
 
-            val result = schema.executeBlocking(query).also(::println).deserialize()
+            val result = schema.executeBlocking(query).also(::println)
             counters.treeChild.prepare.get() shouldBeEqualTo 2
             counters.treeChild.loader.get() shouldBeEqualTo 1
 
@@ -457,7 +455,7 @@ class DataLoaderTest {
                 }
             """.trimIndent()
 
-            val result = schema.executeBlocking(query).also(::println).deserialize()
+            val result = schema.executeBlocking(query).also(::println)
 
             counters.treeChild.prepare.get() shouldBeEqualTo 4
             counters.treeChild.loader.get() shouldBeEqualTo 1
@@ -504,7 +502,7 @@ class DataLoaderTest {
                 }
             """.trimIndent()
 
-            schema.executeBlocking(query).also(::println).deserialize()
+            schema.executeBlocking(query).also(::println)
 
 //            throw TODO("Assert results")
         }

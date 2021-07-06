@@ -17,7 +17,7 @@ class LongScalarTest {
         }
 
         val response = schema.executeBlocking("{long}")
-        val long = deserialize(response).extract<Long>("data/long")
+        val long = response.extract<Long>("data/long")
         assertThat(long, equalTo(Long.MAX_VALUE))
     }
 
@@ -30,7 +30,7 @@ class LongScalarTest {
         }
 
         val isLong =
-            deserialize(schema.executeBlocking("{isLong(long: ${Int.MAX_VALUE.toLong() + 1})}")).extract<String>("data/isLong")
+            schema.executeBlocking("{isLong(long: ${Int.MAX_VALUE.toLong() + 1})}").extract<String>("data/isLong")
         assertThat(isLong, equalTo("YES"))
     }
 
@@ -50,7 +50,7 @@ class LongScalarTest {
         }
 
         val value = Int.MAX_VALUE.toLong() + 2
-        val response = deserialize(schema.executeBlocking("{number(number: $value)}"))
+        val response = schema.executeBlocking("{number(number: $value)}")
         assertThat(response.extract<Long>("data/number"), equalTo(value))
     }
 

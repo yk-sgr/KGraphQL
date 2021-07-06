@@ -1,7 +1,6 @@
 package com.apurebase.kgraphql.integration.github
 
 import com.apurebase.kgraphql.KGraphQL
-import com.apurebase.kgraphql.deserialize
 import com.apurebase.kgraphql.extract
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
@@ -56,7 +55,7 @@ class GitHubIssue105 {
                 }
                 __typename
             }
-        }""".trimIndent()).also(::println).deserialize()
+        }""".trimIndent()).also(::println)
 
         results.extract<String>("data/contactStatus/userId") shouldBeEqualTo "Leopard2A5"
         results.extract<String>("data/contactStatus/__typename") shouldBeEqualTo "Onboarded"
@@ -92,7 +91,7 @@ class GitHubIssue105 {
                     __typename
                 }
             }
-        }""".trimIndent()).also(::println).deserialize()
+        }""".trimIndent()).also(::println)
 
         results.extract<String>("data/carrier/contactStatus/userId") shouldBeEqualTo "Leopard2A5"
         results.extract<String>("data/carrier/contactStatus/__typename") shouldBeEqualTo "Onboarded"

@@ -43,7 +43,7 @@ class EnumTest : BaseSchemaTest() {
         val map = schema.executeBlocking(
             request = "query Search(${'$'}types: [FilmType!]!) { search(types: ${'$'}types)}",
             variables = "{\"types\":[\"FULL_LENGTH\"]}"
-        ).deserialize()
+        )
 
         assertNoErrors(map)
         assertThat(map.extract<String>("data/search"), equalTo("You searched for: FULL_LENGTH"))

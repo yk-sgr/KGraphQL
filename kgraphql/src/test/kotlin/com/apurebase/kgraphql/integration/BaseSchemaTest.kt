@@ -2,7 +2,6 @@ package com.apurebase.kgraphql.integration
 
 import com.apurebase.kgraphql.*
 import org.junit.jupiter.api.AfterEach
-import java.io.ByteArrayInputStream
 
 
 abstract class BaseSchemaTest {
@@ -218,7 +217,7 @@ abstract class BaseSchemaTest {
                 ignore = true
             }
             transformation(Scenario::content) { content : String, uppercase: Boolean? ->
-                if(uppercase == true) content.toUpperCase() else content
+                if(uppercase == true) content.uppercase() else content
             }
         }
         val favouriteID = unionType("Favourite") {
@@ -284,6 +283,6 @@ abstract class BaseSchemaTest {
     fun execute(query: String, variables : String? = null) = testedSchema
         .executeBlocking(query, variables)
         .also(::println)
-        .deserialize()
+
 
 }

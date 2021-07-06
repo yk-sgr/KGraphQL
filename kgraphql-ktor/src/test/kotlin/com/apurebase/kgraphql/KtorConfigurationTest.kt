@@ -1,9 +1,9 @@
 package com.apurebase.kgraphql
 
-import com.apurebase.kgraphql.schema.execution.Executor
 import io.ktor.application.install
 import io.ktor.server.testing.withTestApplication
 import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldBeNull
 import org.junit.jupiter.api.Test
 
 class KtorConfigurationTest: KtorTest() {
@@ -14,7 +14,7 @@ class KtorConfigurationTest: KtorTest() {
         withTestApplication({
             val config = install(GraphQL) {}
             checked = true
-            config.schema.configuration.executor shouldBeEqualTo Executor.Parallel
+            config.schema.configuration.timeout.shouldBeNull()
         }) {}
         checked shouldBeEqualTo true
     }
@@ -24,10 +24,10 @@ class KtorConfigurationTest: KtorTest() {
         var checked = false
         withTestApplication({
             val config = install(GraphQL) {
-                executor = Executor.DataLoaderPrepared
+                timeout = 999
             }
             checked = true
-            config.schema.configuration.executor shouldBeEqualTo Executor.DataLoaderPrepared
+            config.schema.configuration.timeout shouldBeEqualTo 999
         }) {}
         checked shouldBeEqualTo true
     }

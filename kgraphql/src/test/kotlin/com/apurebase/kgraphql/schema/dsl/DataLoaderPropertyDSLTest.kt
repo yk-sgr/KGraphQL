@@ -1,9 +1,7 @@
 package com.apurebase.kgraphql.schema.dsl
 
 import com.apurebase.kgraphql.defaultSchema
-import com.apurebase.kgraphql.deserialize
 import com.apurebase.kgraphql.extract
-import com.apurebase.kgraphql.schema.execution.Executor
 import nidomiro.kdataloader.ExecutionResult
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
@@ -13,9 +11,6 @@ class DataLoaderPropertyDSLTest {
     @Test
     fun `prepare() should support multiple arguments`() {
         val schema = defaultSchema {
-            configure{
-                executor = Executor.DataLoaderPrepared
-            }
             query("parent") {
                 resolver { -> Parent() }
             }
@@ -38,7 +33,7 @@ class DataLoaderPropertyDSLTest {
                     }
                 }
             }
-            """.trimIndent()).deserialize()
+            """.trimIndent())
         results.extract<String>("data/parent/child/data") shouldBeEqualTo "A 1 C 2 E 3 G 4"
     }
 

@@ -6,7 +6,6 @@ import com.apurebase.kgraphql.schema.Subscriber
 import com.apurebase.kgraphql.schema.Subscription
 import com.apurebase.kgraphql.schema.model.FunctionWrapper
 import com.apurebase.kgraphql.schema.model.SubscriptionDef
-import com.fasterxml.jackson.databind.ObjectWriter
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.starProjectedType
@@ -45,15 +44,10 @@ private fun <T : Any> getFieldValue(clazz: T, field: String): Any? {
 }
 
 fun <T : Any> subscribe(subscription: String, publisher: Publisher, output: T, function: (response: String) -> Unit): T {
-    if (!(publisher as FunctionWrapper<*>).kFunction.returnType.isSubtypeOf(output::class.starProjectedType))  
+    if (!(publisher as FunctionWrapper<*>).kFunction.returnType.isSubtypeOf(output::class.starProjectedType))
         throw SchemaException("Subscription return type must be the same as the publisher's")
     val subscriber = object : Subscriber {
-        override fun setObjectWriter(objectWriter: ObjectWriter) {
-            this.objectWriter = objectWriter
-        }
-
-        private var args = emptyArray<String>()
-        private lateinit var objectWriter: ObjectWriter
+                private var args = emptyArray<String>()
         override fun setArgs(args: Array<String>) {
             this.args = args
         }
@@ -65,7 +59,7 @@ fun <T : Any> subscribe(subscription: String, publisher: Publisher, output: T, f
             args.forEach {
                 result[it] = getFieldValue(item!!, it)
             }
-            function(objectWriter.writeValueAsString(response))
+            function(response.toString())
         }
 
         override fun onComplete() {

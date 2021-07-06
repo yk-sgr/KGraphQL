@@ -1,8 +1,6 @@
 package com.apurebase.kgraphql.request
 
-import com.apurebase.kgraphql.ExecutionException
-import com.apurebase.kgraphql.GraphQLError
-import com.apurebase.kgraphql.getIterableElementType
+import com.apurebase.kgraphql.*
 import com.apurebase.kgraphql.isIterable
 import com.apurebase.kgraphql.schema.model.ast.NameNode
 import com.fasterxml.jackson.databind.JavaType
@@ -26,6 +24,7 @@ interface VariablesJson {
         }
     }
 
+    // TODO: This is the only place left using jackson. This should be replaced by a kotlinx.serialization version!
     class Defined(val objectMapper: ObjectMapper, val json: JsonNode) : VariablesJson {
 
         constructor(objectMapper: ObjectMapper, json : String) : this(objectMapper, objectMapper.readTree(json))

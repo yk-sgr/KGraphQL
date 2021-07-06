@@ -1,14 +1,13 @@
 package com.apurebase.kgraphql.schema
 
 import com.apurebase.kgraphql.Context
-import com.apurebase.kgraphql.GraphQLError
+import com.apurebase.kgraphql.GraphQLExecutionResult
 import com.apurebase.kgraphql.configuration.SchemaConfiguration
 import com.apurebase.kgraphql.request.CachingDocumentParser
 import com.apurebase.kgraphql.request.VariablesJson
 import com.apurebase.kgraphql.schema.introspection.__Schema
 import com.apurebase.kgraphql.request.Parser
 import com.apurebase.kgraphql.schema.execution.*
-import com.apurebase.kgraphql.schema.execution.Executor.*
 import com.apurebase.kgraphql.schema.model.ast.NameNode
 import com.apurebase.kgraphql.schema.structure.LookupSchema
 import com.apurebase.kgraphql.schema.structure.RequestInterpreter
@@ -28,27 +27,25 @@ class DefaultSchema (
         val OPERATION_NAME_PARAM = NameNode("operationName", null)
     }
 
-    private val defaultRequestExecutor: RequestExecutor = getExecutor(configuration.executor)
+    private val defaultRequestExecutor: RequestExecutor = DataLoaderPreparedRequestExecutor(this)
 
-    private fun getExecutor(executor: Executor) = when (executor) {
-        Parallel -> ParallelRequestExecutor(this)
-        DataLoaderPrepared -> DataLoaderPreparedRequestExecutor(this)
-    }
-
-     private val requestInterpreter : RequestInterpreter = RequestInterpreter(model)
+    private val requestInterpreter : RequestInterpreter = RequestInterpreter(model)
 
     private val cacheParser: CachingDocumentParser by lazy { CachingDocumentParser(configuration.documentParserCacheMaximumSize) }
 
-    override suspend fun execute(request: String, variables: String?, context: Context, options: ExecutionOptions): String = coroutineScope {
+    override suspend fun execute(
+        request: String,
+        variables: String?,
+        context: Context,
+        options: ExecutionOptions,
+    ): GraphQLExecutionResult = coroutineScope {
         val parsedVariables = variables
             ?.let { VariablesJson.Defined(configuration.objectMapper, variables) }
             ?: VariablesJson.Empty()
 
         val document = Parser(request).parseDocument()
 
-        val executor = options.executor?.let(this@DefaultSchema::getExecutor) ?: defaultRequestExecutor
-
-        executor.suspendExecute(
+        defaultRequestExecutor.suspendExecute(
             plan = requestInterpreter.createExecutionPlan(document, parsedVariables, options),
             variables = parsedVariables,
             context = context

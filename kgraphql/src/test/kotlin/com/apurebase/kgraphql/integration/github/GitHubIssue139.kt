@@ -1,7 +1,6 @@
 package com.apurebase.kgraphql.integration.github
 
 import com.apurebase.kgraphql.KGraphQL
-import com.apurebase.kgraphql.deserialize
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -71,7 +70,7 @@ class GitHubIssue139 {
             }
         """.trimIndent())
             .also(::println)
-            .deserialize()
+
             .let(::println)
     }
 }

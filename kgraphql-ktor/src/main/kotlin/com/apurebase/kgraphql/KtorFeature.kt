@@ -60,7 +60,9 @@ class GraphQL(val schema: Schema) {
                             val ctx = context {
                                 config.contextSetup?.invoke(this, call)
                             }
-                            val result = schema.execute(request.query, request.variables.toString(), ctx)
+                            val result = buildJsonObject {
+                                put("data", schema.execute(request.query, request.variables.toString(), ctx).data)
+                            }.toString()
                             call.respond(result)
                         }
                         if (config.playground) get {

@@ -9,7 +9,6 @@ import com.apurebase.kgraphql.schema.SchemaException
 import com.apurebase.kgraphql.schema.Subscriber
 import com.apurebase.kgraphql.schema.execution.Execution
 import com.apurebase.kgraphql.schema.structure.validateName
-import com.fasterxml.jackson.databind.ObjectWriter
 import kotlin.reflect.KFunction
 import kotlin.reflect.KType
 import kotlin.reflect.full.callSuspend
@@ -70,7 +69,7 @@ interface FunctionWrapper <T> : Publisher {
     val kFunction: KFunction<T>
 
     suspend fun invoke(ctx: Context, node: Execution, vararg args: Any?) : T?
-    suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter) : T?
+    suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>) : T?
 
     fun arity() : Int
 
@@ -115,7 +114,7 @@ interface FunctionWrapper <T> : Publisher {
         override fun unsubscribe(subscription: String) {
             subscribers.remove(subscription)
         }
-        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>): T? {
             TODO("not needed")
         }
 
@@ -138,7 +137,7 @@ interface FunctionWrapper <T> : Publisher {
             subscribers.remove(subscription)
         }
 
-        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>): T? {
             TODO("not needed")
         }
         override fun subscribe(subscription: String, subscriber: Subscriber) {
@@ -173,12 +172,11 @@ interface FunctionWrapper <T> : Publisher {
         override fun unsubscribe(subscription: String) {
             subscribers.remove(subscription)
         }
-        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>): T? {
             if(args.size == arity()){
                 val t = implementation(ExecutionScope(ctx, node), args[0] as R)
                 val subscription = args[0] as String
                 subscribers[subscription]?.setArgs(subscriptionArgs.toTypedArray())
-                subscribers[subscription]?.setObjectWriter(objectWriter)
                 return t
             } else {
                 val e = IllegalArgumentException("This function needs exactly ${arity()} arguments")
@@ -222,7 +220,7 @@ interface FunctionWrapper <T> : Publisher {
         override fun unsubscribe(subscription: String) {
             subscribers.remove(subscription)
         }
-        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>): T? {
             TODO("not needed")
         }
         override fun subscribe(subscription: String, subscriber: Subscriber) {
@@ -259,7 +257,7 @@ interface FunctionWrapper <T> : Publisher {
         override fun unsubscribe(subscription: String) {
             subscribers.remove(subscription)
         }
-        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>): T? {
             TODO("not needed")
         }
         override fun subscribe(subscription: String, subscriber: Subscriber) {
@@ -295,7 +293,7 @@ interface FunctionWrapper <T> : Publisher {
         override fun unsubscribe(subscription: String) {
             subscribers.remove(subscription)
         }
-        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>): T? {
             TODO("not needed")
         }
         override fun subscribe(subscription: String, subscriber: Subscriber) {
@@ -331,7 +329,7 @@ interface FunctionWrapper <T> : Publisher {
         override fun unsubscribe(subscription: String) {
             subscribers.remove(subscription)
         }
-        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>): T? {
             TODO("not needed")
         }
         override fun subscribe(subscription: String, subscriber: Subscriber) {
@@ -367,7 +365,7 @@ interface FunctionWrapper <T> : Publisher {
         override fun unsubscribe(subscription: String) {
             subscribers.remove(subscription)
         }
-        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>): T? {
             TODO("not needed")
         }
         override fun subscribe(subscription: String, subscriber: Subscriber) {
@@ -403,7 +401,7 @@ interface FunctionWrapper <T> : Publisher {
         override fun unsubscribe(subscription: String) {
             subscribers.remove(subscription)
         }
-        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>): T? {
             TODO("not needed")
         }
         override fun subscribe(subscription: String, subscriber: Subscriber) {
@@ -439,7 +437,7 @@ interface FunctionWrapper <T> : Publisher {
         override fun unsubscribe(subscription: String) {
             subscribers.remove(subscription)
         }
-        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>): T? {
             TODO("not needed")
         }
         override fun subscribe(subscription: String, subscriber: Subscriber) {
@@ -475,7 +473,7 @@ interface FunctionWrapper <T> : Publisher {
         override fun unsubscribe(subscription: String) {
             subscribers.remove(subscription)
         }
-        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+        override suspend fun invoke(ctx: Context, node: Execution, args: List<Any?>, subscriptionArgs: List<String>): T? {
             TODO("not needed")
         }
         override fun subscribe(subscription: String, subscriber: Subscriber) {

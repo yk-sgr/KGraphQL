@@ -23,10 +23,10 @@ class QueryTest : BaseSchemaTest() {
     fun `query collection field`(){
         val map = execute("{film{title, director{favActors{name, age}}}}")
         assertNoErrors(map)
-        assertThat(map.extract<Map<String, String>>("data/film/director/favActors[0]"), equalTo(mapOf(
-                "name" to prestige.director.favActors[0].name,
-                "age" to prestige.director.favActors[0].age)
-        ))
+        map.extract<Map<String, String>>("data/film/director/favActors[0]").run {
+            get("name") shouldBeEqualTo prestige.director.favActors[0].name
+            get("age").shouldNotBeNull().toInt() shouldBeEqualTo prestige.director.favActors[0].age
+        }
     }
 
     @Test
@@ -102,20 +102,18 @@ class QueryTest : BaseSchemaTest() {
 
     @Test
     fun `query with interface`(){
-        val map = execute("{randomPerson{name \n age}}")
-        assertThat(map.extract<Map<String, String>>("data/randomPerson"), equalTo(mapOf(
-                "name" to davidFincher.name,
-                "age" to davidFincher.age)
-        ))
+        execute("{randomPerson{name \n age}}").run {
+            extract<String>("data/randomPerson/name") shouldBeEqualTo davidFincher.name
+            extract<Int>("data/randomPerson/age") shouldBeEqualTo davidFincher.age
+        }
     }
 
     @Test
     fun `query with collection elements interface`(){
         val map = execute("{people{name, age}}")
-        assertThat(map.extract<Map<String, String>>("data/people[0]"), equalTo(mapOf(
-                "name" to davidFincher.name,
-                "age" to davidFincher.age)
-        ))
+
+        map.extract<String>("data/people[0]/name") shouldBeEqualTo davidFincher.name
+        map.extract<Int>("data/people[0]/age") shouldBeEqualTo davidFincher.age
     }
 
     @Test
@@ -316,7 +314,7 @@ class QueryTest : BaseSchemaTest() {
                 id
                 name
             }
-        """.trimIndent()).also(::println).deserialize()
+        """.trimIndent()).also(::println)
 
         result.extract<List<String>>("data/root/fields") shouldBeEqualTo listOf("fields")
         result.extract<Int>("data/root/kids[0]/id") shouldBeEqualTo 1

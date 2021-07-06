@@ -1,6 +1,5 @@
 package com.apurebase.kgraphql.demo
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.apurebase.kgraphql.KGraphQL
 
 enum class Episode {
@@ -40,7 +39,6 @@ fun main() {
 
         configure {
             useDefaultPrettyPrinter = true
-            objectMapper = jacksonObjectMapper()
             useCachingDocumentParser = false
         }
 

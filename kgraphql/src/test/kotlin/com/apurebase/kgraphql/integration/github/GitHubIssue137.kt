@@ -1,7 +1,6 @@
 package com.apurebase.kgraphql.integration.github
 
 import com.apurebase.kgraphql.KGraphQL
-import com.apurebase.kgraphql.deserialize
 import com.apurebase.kgraphql.extract
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
@@ -35,7 +34,7 @@ class GitHubIssue137 {
                 }
             """
         ).also(::println)
-            .deserialize()
+
             .extract<String>("data/search") shouldBeEqualTo "1_2: Search"
     }
 
