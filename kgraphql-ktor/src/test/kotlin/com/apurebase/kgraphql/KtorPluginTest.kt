@@ -1,12 +1,12 @@
 package com.apurebase.kgraphql
 
-import io.ktor.application.*
-import io.ktor.auth.*
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.auth.Principal
 import kotlinx.serialization.json.*
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
 
-class KtorFeatureTest : KtorTest() {
+class KtorPluginTest : KtorTest() {
 
     data class User(val id: Int = -1, val name: String = "") : Principal
 

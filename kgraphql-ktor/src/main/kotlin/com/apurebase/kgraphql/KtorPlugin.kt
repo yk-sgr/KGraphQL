@@ -3,12 +3,25 @@ package com.apurebase.kgraphql
 import com.apurebase.kgraphql.schema.Schema
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
 import com.apurebase.kgraphql.schema.dsl.SchemaConfigurationDSL
-import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
-import io.ktor.util.*
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.ApplicationCallPipeline
+import io.ktor.server.application.ApplicationPlugin
+import io.ktor.server.application.call
+import io.ktor.server.application.install
+import io.ktor.server.application.pluginOrNull
+import io.ktor.server.request.receiveText
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondBytes
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.Routing
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
+import io.ktor.util.AttributeKey
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.*
 import kotlinx.serialization.json.Json.Default.decodeFromString
@@ -42,7 +55,7 @@ class GraphQL(val schema: Schema) {
     }
 
 
-    companion object Feature: ApplicationFeature<Application, Configuration, GraphQL> {
+    companion object Feature: ApplicationPlugin<Application, Configuration, GraphQL> {
         override val key = AttributeKey<GraphQL>("KGraphQL")
 
         override fun install(pipeline: Application, configure: Configuration.() -> Unit): GraphQL {
@@ -74,7 +87,7 @@ class GraphQL(val schema: Schema) {
                 config.wrapWith?.invoke(this, routing) ?: routing(this)
             }
 
-            pipeline.featureOrNull(Routing)?.apply(routing) ?: pipeline.install(Routing, routing)
+            pipeline.pluginOrNull(Routing)?.apply(routing) ?: pipeline.install(Routing, routing)
 
             pipeline.intercept(ApplicationCallPipeline.Monitoring) {
                 try {

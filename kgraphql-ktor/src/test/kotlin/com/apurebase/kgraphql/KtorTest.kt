@@ -1,9 +1,12 @@
 package com.apurebase.kgraphql
 
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
-import io.ktor.application.*
-import io.ktor.auth.*
 import io.ktor.http.*
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.basic
 import io.ktor.server.testing.*
 
 
@@ -16,7 +19,7 @@ open class KtorTest {
                     basic {
                         realm = "ktor"
                         validate {
-                            KtorFeatureTest.User(4, it.name)
+                            KtorPluginTest.User(4, it.name)
                         }
                     }
                 }
